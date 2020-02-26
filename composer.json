@@ -1,0 +1,19 @@
+{
+  "name": "indigit/woocommerce-indigit",
+  "description": "INDIGIT® WooCommerce Extended for CTT",
+  "authors": [
+    {
+      "name": "Nuno Xavier",
+      "email": "nuno@indigit.pt"
+    }
+  ],
+  "require": {
+    "php": ">=7.1",
+    "ext-mbstring": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "INDIGIT\\": "src"
+    }
+  }
+}
