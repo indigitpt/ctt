@@ -81,7 +81,11 @@ class CTT
         }
 
         $phoneNumber = $this->order->get_billing_phone();
-        $phoneTag = strpos($phoneNumber, '9') === 0 ? 'MobilePhone' : 'Phone';
+        $mobileNumber = '';
+        if (strpos($phoneNumber, '9') === 0) {
+            $mobileNumber = $phoneNumber;
+            $phoneNumber = '';
+        }
 
         $payload = <<<EOL
 <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:tem='http://tempuri.org/' xmlns:ctt='http://schemas.datacontract.org/2004/07/CTTExpressoWS' xmlns:ctt1='http://schemas.datacontract.org/2004/07/CTTExpressoWS.Models.ShipmentProvider' xmlns:ctt2='http://schemas.datacontract.org/2004/07/CTTExpressoWS.Models.ShipmentProvider.SEPs'>
@@ -103,12 +107,13 @@ class CTT
                         <ctt1:Address>{$this->order->get_shipping_address_1()}</ctt1:Address>
                         <ctt1:City>{$this->order->get_shipping_city()}</ctt1:City>
                         <ctt1:Country>{$this->order->get_shipping_country()}</ctt1:Country>
+                        <ctt1:Email>{$this->order->get_billing_email()}</ctt1:Email>
+                        <ctt1:MobilePhone>{$mobileNumber}</ctt1:MobilePhone>
                         <ctt1:Name>{$this->order->get_shipping_first_name()} {$this->order->get_shipping_last_name()}</ctt1:Name>
                         <ctt1:PTZipCode3>{$this->zipShipping2}</ctt1:PTZipCode3>
                         <ctt1:PTZipCode4>{$this->zipShipping1}</ctt1:PTZipCode4>
                         <ctt1:PTZipCodeLocation>{$this->order->get_shipping_city()}</ctt1:PTZipCodeLocation>
-                        <ctt1:Email>{$this->order->get_billing_email()}</ctt1:Email>
-                        <ctt1:{$phoneTag}>{$phoneNumber}</ctt1:{$phoneTag}>
+                        <ctt1:Phone>{$phoneNumber}</ctt1:Phone>
                         <ctt1:Type>Receiver</ctt1:Type>
                      </ctt1:ReceiverData>
                      <ctt1:SenderData>
