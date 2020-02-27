@@ -40,7 +40,7 @@ class Plugin
     {
         add_action('admin_menu', function () {
             // Add INDIGIT management page menu item
-            add_menu_page('CTT', 'CTT', 'manage_options', 'indigit_manage', function () {
+            add_menu_page('CTT', 'CTT', 'manage_options', 'ctt_manage', function () {
 
                 /** @var \WC_Payment_Gateway[] $available_gateways */
                 $available_gateways = WC()->payment_gateways()->payment_gateways();
@@ -237,11 +237,6 @@ class Plugin
 
             $this->order->add_order_note(__('Documentos enviados para: ' . EMAIL_SEND_INTERNAL));
         }
-
-        // remove temporary files
-        // @todo uncomment following lines when sending to live?
-        // $cttPDF && unlink($cttPDF);
-        // $invoicePDF && unlink($invoicePDF);
     }
 
     /**
@@ -267,12 +262,13 @@ class Plugin
                 [$cttReference, $lastReference, $request_id] = explode("||##||", $cttReferences);
             endif;
 
-            if(null !== $cttFilename && file_exists(sprintf('%s/%s', INDIGIT_PLG_DIR_FILES, $cttFilename))): ?>
-            <a type="button" class="button button-primary" target="_blank" href="<?php echo plugins_url(sprintf('indigit/files/%s', $cttFilename)); ?>" style="margin-top: 10px; float:right;">CTT <?php echo $cttReference ?? 'Guia' ?></a>
+            $upload_dir = wp_upload_dir();
+            if(null !== $cttFilename && file_exists(sprintf('%s/%s', trailingslashit($upload_dir['basedir']), $cttFilename))): ?>
+            <a type="button" class="button button-primary" target="_blank" href="<?php echo sprintf('%s/%s', $upload_dir['baseurl'], $cttFilename); ?>" style="margin-top: 10px; float:right;">CTT <?php echo $cttReference ?? 'Guia' ?></a>
             <?php endif;
 
-            if(null !== $moloniFilename && file_exists(sprintf('%s/%s', INDIGIT_PLG_DIR_FILES, $moloniFilename))): ?>
-            <a type="button" class="button button-primary" target="_blank" href="<?php echo plugins_url(sprintf('indigit/files/%s', $moloniFilename)); ?>" style="margin-top: 10px; float:right;">Factura <?php echo $moloniID ?? '' ?></a>
+            if(null !== $moloniFilename && file_exists(sprintf('%s/%s', trailingslashit($upload_dir['basedir']), $moloniFilename))): ?>
+            <a type="button" class="button button-primary" target="_blank" href="<?php echo sprintf('%s/%s', $upload_dir['baseurl'], $moloniFilename); ?>" style="margin-top: 10px; float:right;">Factura <?php echo $moloniID ?? '' ?></a>
             <?php endif; ?>
 
             <div style="clear:both"></div>

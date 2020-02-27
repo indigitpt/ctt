@@ -13,9 +13,6 @@ Author URI: https://indigit.pt
 */
 
 define('INDIGIT_PLG_DIR', WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__)));
-define('INDIGIT_PLG_URL', plugins_url(plugin_basename(dirname(__FILE__))));
-
-define('INDIGIT_PLG_DIR_FILES', INDIGIT_PLG_DIR . '/files');
 define('INDIGIT_PLG_DIR_LOGS', INDIGIT_PLG_DIR . '/logs');
 
 define('INDIGIT_CTT_ENABLED', 'indigit_ctt_enabled');
@@ -86,20 +83,3 @@ if(!function_exists('indigit_log')){
     }
 
 }
-
-/**
- * Dump variable contents
- *
- * @param mixed ...$args
- */
-if(!function_exists('dd')){
-    function dd(...$args)
-    {
-        echo "<pre><code>";
-        foreach ($args as $x) {
-            var_dump($x);
-        }
-        echo "</code></pre>";
-    }
-}
-

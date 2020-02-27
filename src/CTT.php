@@ -80,6 +80,9 @@ class CTT
             return $cttFilename;
         }
 
+        $phoneNumber = $this->order->get_billing_phone();
+        $phoneTag = strpos($phoneNumber, '9') === 0 ? 'MobilePhone' : 'Phone';
+
         $payload = <<<EOL
 <soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/' xmlns:tem='http://tempuri.org/' xmlns:ctt='http://schemas.datacontract.org/2004/07/CTTExpressoWS' xmlns:ctt1='http://schemas.datacontract.org/2004/07/CTTExpressoWS.Models.ShipmentProvider' xmlns:ctt2='http://schemas.datacontract.org/2004/07/CTTExpressoWS.Models.ShipmentProvider.SEPs'>
    <soapenv:Header/>
@@ -105,7 +108,7 @@ class CTT
                         <ctt1:PTZipCode4>{$this->zipShipping1}</ctt1:PTZipCode4>
                         <ctt1:PTZipCodeLocation>{$this->order->get_shipping_city()}</ctt1:PTZipCodeLocation>
                         <ctt1:Email>{$this->order->get_billing_email()}</ctt1:Email>
-                        <ctt1:Phone>{$this->order->get_billing_phone()}</ctt1:Phone>
+                        <ctt1:{$phoneTag}>{$phoneNumber}</ctt1:{$phoneTag}>
                         <ctt1:Type>Receiver</ctt1:Type>
                      </ctt1:ReceiverData>
                      <ctt1:SenderData>
@@ -161,6 +164,7 @@ EOL;
         /** @var \DOMNode $status */
         $status = $xpath->query("//a:Status")->item(0);
         if (null !== $status && $status->nodeValue === 'Failure') {
+            $this->order->add_order_note('Falhou o pedido para criação no CTTExpresso.');
             return null;
         }
 
@@ -171,7 +175,8 @@ EOL;
         // Save PDF
         $directory = date('Y-m-d');
         $filename = sprintf('%s_ctt.pdf', $this->order->get_id());
-        $path = sprintf('%s/%s', INDIGIT_PLG_DIR_FILES, $directory);
+        $upload_dir = wp_upload_dir();
+        $path = sprintf('%s/%s', trailingslashit($upload_dir['basedir']), $directory);
         !file_exists($path) && mkdir($path, 0777, true);
         $pdfFilename = sprintf('%s/%s', $path, $filename);
         file_put_contents($pdfFilename, base64_decode($pdf));
