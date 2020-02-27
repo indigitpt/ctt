@@ -59,9 +59,7 @@ indigit()->registerAdminMenu()->registerListeners();
 if(!function_exists('indigit_log')){
     function indigit_log($prefix = 'info', $message = '', $data = [])
     {
-        if (!WP_DEBUG) {
-            return;
-        }
+
         if ($message instanceof \Exception) {
             $data = array_merge($data, [
                 '_file' => $message->getFile(),

@@ -71,13 +71,25 @@ class CTT
         // shipping
         [$this->zipShipping1, $this->zipShipping2] = explode('-', $this->order->get_shipping_postcode());
 
-        $this->totalWeight = get_post_meta($this->order->get_id(), '_cart_weight', true) * 1000; // to grams
-        $this->totalItems = get_post_meta($this->order->get_id(), '_cart_quantity_sum', true);
-
         // If we already have references for
         $cttFilename = get_post_meta($this->order->get_id(), '_ctt_file', true);
         if ($cttFilename !== '') {
             return $cttFilename;
+        }
+
+        foreach( $this->order->get_items() as $item_id => $product_item ){
+            $quantity = $product_item->get_quantity();
+            $product_weight = $product_item->get_product()->get_weight();
+            $this->totalWeight += ($product_weight * $quantity);
+            $this->totalItems += $quantity;
+        }
+
+        // to grams
+        switch(get_option( 'woocommerce_weight_unit' )) {
+            case 'kg':
+                $this->totalWeight = $this->totalWeight * 1000;
+                break;
+            // ...
         }
 
         $phoneNumber = $this->order->get_billing_phone();

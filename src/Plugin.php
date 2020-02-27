@@ -155,6 +155,27 @@ class Plugin
                 echo wp_nonce_field('woocommerce-settings');
                 echo '</form>';
             });
+
+            // Add INDIGIT management page menu item
+            add_submenu_page(null, 'CTT', 'CTT', 'manage_options', 'ctt_generate', function () {
+                $order_id = $_GET['order_id'];
+
+                // Fetch order from database
+                $this->order = new \WC_Order((int)$order_id);
+
+                try {
+                    get_option(INDIGIT_CTT_ENABLED) === 'yes' && $this->processCTT(null);
+
+                    wp_redirect(admin_url(sprintf('post.php?post=%s&action=edit', $order_id)));
+                    exit;
+
+                } catch (\Exception $e) {
+                    // Store some log info
+                    indigit_log('>> CTT', $e);
+
+                    echo $e->getMessage();
+                }
+            });
         });
 
         return $this;
@@ -182,14 +203,6 @@ class Plugin
             }
         });
 
-        // update order weight
-        add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
-            $cart = WC()->cart;
-            $weight = $cart->get_cart_contents_weight();
-            $quantities = $cart->get_cart_item_quantities();
-            update_post_meta($order_id, '_cart_weight', $weight);
-            update_post_meta($order_id, '_cart_quantity_sum', array_sum($quantities));
-        });
         add_action('woocommerce_admin_order_data_after_shipping_address', function (\WC_Order $order) {
             echo sprintf('<p><strong>Peso Total:</strong> %s%s</p>', get_post_meta($order->get_id(), '_cart_weight', true), get_option('woocommerce_weight_unit'));
         }, 10, 1);
@@ -265,6 +278,8 @@ class Plugin
             $upload_dir = wp_upload_dir();
             if(null !== $cttFilename && file_exists(sprintf('%s/%s', trailingslashit($upload_dir['basedir']), $cttFilename))): ?>
             <a type="button" class="button button-primary" target="_blank" href="<?php echo sprintf('%s/%s', $upload_dir['baseurl'], $cttFilename); ?>" style="margin-top: 10px; float:right;">CTT <?php echo $cttReference ?? 'Guia' ?></a>
+            <?php else: ?>
+            <a type="button" class="button button-primary" href="<?php echo admin_url('admin.php?page=ctt_generate&order_id=' . $post->ID); ?>" style="margin-top: 10px; float:right;">!! GERAR GUIA CTT !!</a>
             <?php endif;
 
             if(null !== $moloniFilename && file_exists(sprintf('%s/%s', trailingslashit($upload_dir['basedir']), $moloniFilename))): ?>
