@@ -204,7 +204,27 @@ class Plugin
         });
 
         add_action('woocommerce_admin_order_data_after_shipping_address', function (\WC_Order $order) {
-            echo sprintf('<p><strong>Peso Total:</strong> %s%s</p>', get_post_meta($order->get_id(), '_cart_weight', true), get_option('woocommerce_weight_unit'));
+
+            $totalWeight = 0;
+            foreach($order->get_items() as $item_id => $product_item) {
+                /** @var $product_item \WC_Order_Item_Product */
+                $quantity = $product_item->get_quantity();
+
+                $weight = null;
+                $meta_data = $product_item->get_formatted_meta_data('');
+                if ($meta_data) {
+                    foreach ($meta_data as $meta_id => $meta) {
+                        if (strpos($meta->display_key, 'peso') !== false) {
+                            $weight = round(trim(strip_tags($meta->display_value)));
+                        }
+                    }
+                }
+
+                $product_weight = $weight ?? $product_item->get_product()->get_weight();
+                $totalWeight += ($product_weight * $quantity);
+            }
+
+            echo sprintf('<p><strong>Peso Total:</strong> %s%s</p>', $totalWeight, get_option('woocommerce_weight_unit'));
         }, 10, 1);
 
         // Add order extra information

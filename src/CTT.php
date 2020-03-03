@@ -77,15 +77,27 @@ class CTT
             return $cttFilename;
         }
 
-        foreach( $this->order->get_items() as $item_id => $product_item ){
+        foreach($this->order->get_items() as $item_id => $product_item){
+            /** @var $product_item \WC_Order_Item_Product */
             $quantity = $product_item->get_quantity();
-            $product_weight = $product_item->get_product()->get_weight();
+
+            $weight = null;
+            $meta_data = $product_item->get_formatted_meta_data('');
+            if ($meta_data) {
+                foreach ($meta_data as $meta_id => $meta) {
+                    if (strpos($meta->display_key, 'peso') !== false) {
+                        $weight = round(trim(strip_tags($meta->display_value)));
+                    }
+                }
+            }
+
+            $product_weight = $weight ?? $product_item->get_product()->get_weight();
             $this->totalWeight += ($product_weight * $quantity);
             $this->totalItems += $quantity;
         }
 
         // to grams
-        switch(get_option( 'woocommerce_weight_unit' )) {
+        switch(get_option('woocommerce_weight_unit')) {
             case 'kg':
                 $this->totalWeight = $this->totalWeight * 1000;
                 break;
