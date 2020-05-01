@@ -16,6 +16,7 @@ define('INDIGIT_PLG_DIR', WP_PLUGIN_DIR . '/' . plugin_basename(dirname(__FILE__
 define('INDIGIT_PLG_DIR_LOGS', INDIGIT_PLG_DIR . '/logs');
 
 define('INDIGIT_CTT_ENABLED', 'indigit_ctt_enabled');
+define('INDIGIT_CTT_AUTOMATIC', 'indigit_ctt_automatic');
 define('INDIGIT_CTT_PRODUCTION', 'indigit_ctt_production');
 define('INDIGIT_CTT_AUTHENTICATION_ID', 'indigit_ctt_authentication_id');
 define('INDIGIT_CTT_CLIENT_ID', 'indigit_ctt_client_id');

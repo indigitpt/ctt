@@ -189,7 +189,6 @@ class Plugin
     public function registerListeners()
     {
         // moloni connect
-        /* disable automatic ctt label
         add_action('moloni_order_processed', function ($info) {
             list($order_id, $pdf) = $info;
 
@@ -197,12 +196,12 @@ class Plugin
             $this->order = new \WC_Order((int)$order_id);
 
             try {
-                get_option(INDIGIT_CTT_ENABLED) === 'yes' && $this->processCTT($pdf);
+                get_option(INDIGIT_CTT_ENABLED) === 'yes' && get_option(INDIGIT_CTT_AUTOMATIC) === 'yes' && $this->processCTT($pdf);
             } catch (\Exception $e) {
                 // Store some log info
                 indigit_log('>> CTT', $e);
             }
-        });*/
+        });
 
         add_action('woocommerce_admin_order_data_after_shipping_address', function (\WC_Order $order) {
 
