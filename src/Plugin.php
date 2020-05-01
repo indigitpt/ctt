@@ -79,6 +79,15 @@ class Plugin
                             'checkboxgroup' => 'end',
                         ),
                         array(
+                            'id' => INDIGIT_CTT_AUTOMATIC,
+                            'type' => 'checkbox',
+                            'desc' => __('Activar modo automatico de guias', 'woocommerce'),
+                            'default' => 'no',
+                            'desc_tip' => false,
+                            'show_if_checked' => 'yes',
+                            'checkboxgroup' => 'end',
+                        ),
+                        array(
                             'id' => INDIGIT_CTT_AUTHENTICATION_ID,
                             'type' => 'text',
                             'title' => __('Authentication ID', 'woocommerce'),
